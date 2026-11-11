@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de aprovação | Tello</title>
+
+  <!-- Fonte Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =====================================================
+       1. CONFIGURAÇÕES GERAIS
+       Altere as cores e medidas principais aqui.
+    ===================================================== */
+    :root {
+      --background: #ffffff;
+      --surface: #ffffff;
+      --soft: #f7f7f7;
+      --border: #eaeaea;
+      --text: #202020;
+      --muted: #858585;
+      --green: #238b57;
+      --green-soft: #eaf6ef;
+      --orange: #b87520;
+      --orange-soft: #fff5e7;
+      --red: #bd4545;
+      --red-soft: #fff0f0;
+      --font: 'Poppins', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+    }
+
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .page {
+      width: min(100% - 40px, 1040px);
+      margin: 0 auto;
+      padding: 34px 0 70px;
+    }
+
+    /* =====================================================
+       2. CABEÇALHO — APRESENTAÇÃO DA CLIENTE
+    ===================================================== */
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 10px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .avatar {
+      width: 88px;
+      height: 88px;
+      flex: 0 0 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #ededed;
+      border: 1px solid var(--border);
+    }
+
+    .profile-info { flex: 1; min-width: 0; }
+
+    .profile-topline {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .client-name {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .agency-tag {
+      color: var(--muted);
+      font-size: 12px;
+      background: var(--soft);
+      border-radius: 20px;
+      padding: 6px 11px;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      color: #555;
+      font-size: 13px;
+    }
+
+    .stats strong { color: var(--text); font-weight: 600; }
+
+    .intro {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      margin: 12px 0 0;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading h2 {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .progress-label {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      height: 5px;
+      background: #eeeeee;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--green);
+      transition: width .25s ease;
+    }
+
+    /* =====================================================
+       3. LINHAS DOS CONTEÚDOS
+    ===================================================== */
+    .content-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .content-card {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 22px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+
+    .preview {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      border-radius: 7px;
+      background: #f0eee9;
+    }
+
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .preview-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      text-align: center;
+      color: #777;
+      font-size: 12px;
+      background: linear-gradient(145deg, #f3eee8, #e6e1da);
+    }
+
+    .slide-count {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      color: white;
+      background: rgba(0,0,0,.62);
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+    }
+
+    .content-details { min-width: 0; }
+
+    .content-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .content-number {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      margin-bottom: 3px;
+    }
+
+    .content-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .status {
+      flex: 0 0 auto;
+      border-radius: 20px;
+      padding: 5px 9px;
+      font-size: 10px;
+      font-weight: 500;
+      background: var(--orange-soft);
+      color: var(--orange);
+    }
+
+    .status.approved { background: var(--green-soft); color: var(--green); }
+    .status.changes { background: var(--red-soft); color: var(--red); }
+
+    .content-description {
+      color: #777;
+      font-size: 12px;
+      line-height: 1.65;
+      margin: 7px 0 13px;
+    }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .slide-nav {
+      width: 29px;
+      height: 29px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 50%;
+      color: #444;
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .slide-nav:disabled { opacity: .35; cursor: not-allowed; }
+
+    .slide-indicator {
+      color: #666;
+      font-size: 11px;
+      min-width: 65px;
+      text-align: center;
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .slide-dot {
+      width: 6px;
+      height: 6px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #d6d6d6;
+    }
+
+    .slide-dot.active { background: #333; }
+
+    .feedback-area {
+      display: none;
+      margin: 0 0 12px;
+    }
+
+    .feedback-area.visible { display: block; }
+
+    .feedback-area label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .feedback-area textarea {
+      display: block;
+      width: 100%;
+      min-height: 66px;
+      resize: vertical;
+      padding: 10px 11px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      outline: none;
+      font-size: 12px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .feedback-area textarea:focus { border-color: #999; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      border-radius: 7px;
+      padding: 9px 13px;
+      font-size: 11px;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: white;
+      color: #444;
+    }
+
+    .btn-approve {
+      color: white;
+      background: #242424;
+      border-color: #242424;
+    }
+
+    .btn-approve:hover { background: #444; }
+    .btn-changes:hover { background: var(--soft); }
+
+    .btn-save {
+      background: var(--red-soft);
+      border-color: #f3dada;
+      color: var(--red);
+    }
+
+    .bottom-note {
+      margin-top: 24px;
+      padding: 16px;
+      background: var(--soft);
+      border-radius: 9px;
+      color: #777;
+      font-size: 11px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #242424;
+      color: white;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s;
+      z-index: 10;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* =====================================================
+       4. AJUSTES PARA CELULAR
+    ===================================================== */
+    @media (max-width: 640px) {
+      .page { width: min(100% - 28px, 520px); padding-top: 22px; }
+      .profile-header { gap: 15px; padding-bottom: 22px; }
+      .avatar { width: 66px; height: 66px; flex-basis: 66px; }
+      .client-name { font-size: 16px; }
+      .profile-topline { gap: 7px; margin-bottom: 8px; }
+      .agency-tag { font-size: 10px; padding: 5px 8px; }
+      .stats { gap: 10px 17px; font-size: 11px; }
+      .intro { font-size: 11px; margin-top: 8px; }
+      .section-heading { align-items: start; }
+      .section-heading h2 { font-size: 15px; }
+      .progress-label { font-size: 10px; }
+      .content-card { grid-template-columns: 104px minmax(0, 1fr); gap: 13px; padding: 12px; }
+      .content-top { display: block; }
+      .status { display: inline-block; margin-top: 7px; }
+      .content-title { font-size: 13px; }
+      .content-description { font-size: 11px; margin: 6px 0 10px; }
+      .carousel-controls { gap: 6px; margin-bottom: 11px; }
+      .slide-dots { display: none; }
+      .actions .btn { padding: 8px 10px; font-size: 10px; }
+    }
+
+    @media (max-width: 370px) {
+      .content-card { grid-template-columns: 88px minmax(0, 1fr); gap: 10px; padding: 10px; }
+      .stats { gap: 7px 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <!-- =================================================
+         EDITE A CLIENTE E A AGÊNCIA NESTE CABEÇALHO
+    ================================================== -->
+    <header class="profile-header">
+      <img class="avatar" id="clientAvatar" src="https://placehold.co/200x200/f0eee9/777?text=LOGO" alt="Foto ou logo da cliente">
+      <div class="profile-info">
+        <div class="profile-topline">
+          <h1 class="client-name" id="clientName">Nome da cliente</h1>
+          <span class="agency-tag" id="agencyName">por tello</span>
+        </div>
+        <div class="stats">
+          <span><strong id="totalCount">12</strong> conteúdos</span>
+          <span><strong id="approvedCount">0</strong> aprovados</span>
+          <span><strong id="pendingCount">12</strong> pendentes</span>
+        </div>
+        <p class="intro">Confira os conteúdos abaixo e aprove ou solicite alterações. Você pode navegar pelos slides de cada publicação.</p>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-heading">
+        <div>
+          <h2>Conteúdos para aprovação</h2>
+          <p>Revise cada publicação antes de aprovar.</p>
+        </div>
+        <span class="progress-label" id="progressLabel">0 de 12 aprovados</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="content-list" id="contentList"></div>
+    </section>
+
+    <div class="bottom-note">
+      Ao solicitar uma alteração, descreva o que precisa ser ajustado no campo indicado.<br>
+      Obrigado por revisar os conteúdos!
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* =====================================================
+       5. DADOS EDITÁVEIS
+       Para trocar os conteúdos, edite esta lista.
+       Cada conteúdo pode ter quantos slides precisar.
+       Em cada slide, informe uma imagem (URL) ou deixe "".
+    ===================================================== */
+
+    const CONFIG = {
+      cliente: "Nome da cliente",
+      agencia: "por tello",
+      foto: "https://placehold.co/200x200/f0eee9/777?text=LOGO"
+    };
+
+    const CONTEUDOS = [
+      {
+        titulo: "5 hábitos que melhoram sua rotina",
+        descricao: "Carrossel educativo para Instagram.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Primeiro hábito" },
+          { imagem: "", texto: "Slide 3 — Segundo hábito" },
+          { imagem: "", texto: "Slide 4 — Terceiro hábito" }
+        ]
+      },
+      {
+        titulo: "Você está cometendo esse erro?",
+        descricao: "Conteúdo informativo.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Desenvolvimento" },
+          { imagem: "", texto: "Slide 3 — Conclusão" }
+        ]
+      },
+      {
+        titulo: "Mitos e verdades",
+        descricao: "Conteúdo para gerar interação.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Mito" },
+          { imagem: "", texto: "Slide 3 — Verdade" }
+        ]
+      },
+      {
+        titulo: "Dica prática da semana",
+        descricao: "Conteúdo de orientação.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Dica" },
+          { imagem: "", texto: "Slide 3 — Aplicação" }
+        ]
+      },
+      {
+        titulo: "O que você precisa saber",
+        descricao: "Conteúdo explicativo.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Informação" },
+          { imagem: "", texto: "Slide 3 — Fechamento" }
+        ]
+      },
+      {
+        titulo: "3 sinais para ficar atento",
+        descricao: "Conteúdo de conscientização.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Sinal 1" },
+          { imagem: "", texto: "Slide 3 — Sinal 2" },
+          { imagem: "", texto: "Slide 4 — Sinal 3" }
+        ]
+      },
+      {
+        titulo: "Uma pergunta importante",
+        descricao: "Publicação para incentivar comentários.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Reflexão" }
+        ]
+      },
+      {
+        titulo: "Passo a passo",
+        descricao: "Conteúdo prático.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Passo 1" },
+          { imagem: "", texto: "Slide 3 — Passo 2" },
+          { imagem: "", texto: "Slide 4 — Passo 3" }
+        ]
+      },
+      {
+        titulo: "Você sabia?",
+        descricao: "Curiosidade relacionada à área.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Curiosidade" },
+          { imagem: "", texto: "Slide 3 — Explicação" }
+        ]
+      },
+      {
+        titulo: "Como começar?",
+        descricao: "Conteúdo para orientar o público.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Orientação" },
+          { imagem: "", texto: "Slide 3 — Próximo passo" }
+        ]
+      },
+      {
+        titulo: "Frase para refletir",
+        descricao: "Publicação leve e compartilhável.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Arte principal" }
+        ]
+      },
+      {
+        titulo: "Encerramento do mês",
+        descricao: "Resumo e convite à interação.",
+        slides: [
+          { imagem: "", texto: "Slide 1 — Capa" },
+          { imagem: "", texto: "Slide 2 — Mensagem final" }
+        ]
+      }
+    ];
+
+    /* =====================================================
+       6. FUNCIONAMENTO
+       Abaixo ficam as funções. Em geral, não é necessário
+       alterar esta parte para trocar textos e imagens.
+    ===================================================== */
+
+    const estados = CONTEUDOS.map(() => ({ status: "pending", feedback: "", slide: 0 }));
+
+    document.getElementById("clientName").textContent = CONFIG.cliente;
+    document.getElementById("agencyName").textContent = CONFIG.agencia;
+    document.getElementById("clientAvatar").src = CONFIG.foto;
+    document.getElementById("totalCount").textContent = CONTEUDOS.length;
+
+    const lista = document.getElementById("contentList");
+
+    function escapar(texto) {
+      return String(texto).replace(/[&<>"']/g, caractere => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[caractere]);
+    }
+
+    function renderizar() {
+      lista.innerHTML = "";
+
+      CONTEUDOS.forEach((conteudo, index) => {
+        const estado = estados[index];
+        const slide = conteudo.slides[estado.slide];
+        const statusTexto = estado.status === "approved"
+          ? "Aprovado"
+          : estado.status === "changes" ? "Alterações solicitadas" : "Aguardando aprovação";
+
+        const card = document.createElement("article");
+        card.className = "content-card";
+
+        const preview = slide.imagem
+          ? `<img src="${escapar(slide.imagem)}" alt="${escapar(slide.texto || "Slide do conteúdo")}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+             <div class="preview-placeholder" style="display:none">${escapar(slide.texto || "Adicione uma imagem")}</div>`
+          : `<div class="preview-placeholder">${escapar(slide.texto || `Slide ${estado.slide + 1}`)}</div>`;
+
+        const dots = conteudo.slides.map((_, i) =>
+          `<button class="slide-dot ${i === estado.slide ? "active" : ""}" aria-label="Ver slide ${i + 1}" onclick="mudarSlide(${index}, ${i})"></button>`
+        ).join("");
+
+        card.innerHTML = `
+          <div class="preview">
+            ${preview}
+            <span class="slide-count">${estado.slide + 1}/${conteudo.slides.length}</span>
+          </div>
+          <div class="content-details">
+            <div class="content-top">
+              <div>
+                <div class="content-number">Conteúdo ${String(index + 1).padStart(2, "0")}</div>
+                <h3 class="content-title">${escapar(conteudo.titulo)}</h3>
+              </div>
+              <span class="status ${estado.status}">${statusTexto}</span>
+            </div>
+            <p class="content-description">${escapar(conteudo.descricao || "")}</p>
+            <div class="carousel-controls">
+              <button class="slide-nav" onclick="mudarSlide(${index}, ${estado.slide - 1})" ${estado.slide === 0 ? "disabled" : ""} aria-label="Slide anterior">‹</button>
+              <span class="slide-indicator">Slide ${estado.slide + 1} de ${conteudo.slides.length}</span>
+              <button class="slide-nav" onclick="mudarSlide(${index}, ${estado.slide + 1})" ${estado.slide === conteudo.slides.length - 1 ? "disabled" : ""} aria-label="Próximo slide">›</button>
+              <div class="slide-dots">${dots}</div>
+            </div>
+            <div class="feedback-area ${estado.status === "changes" ? "visible" : ""}" id="feedback-${index}">
+              <label for="comment-${index}">O que precisa ser alterado?</label>
+              <textarea id="comment-${index}" placeholder="Descreva aqui os ajustes necessários...">${escapar(estado.feedback)}</textarea>
+            </div>
+            <div class="actions">
+              <button class="btn btn-approve" onclick="aprovar(${index})">✓ Aprovar conteúdo</button>
+              <button class="btn btn-changes" onclick="mostrarAlteracao(${index})">Solicitar alteração</button>
+              ${estado.status === "changes" ? `<button class="btn btn-save" onclick="salvarAlteracao(${index})">Enviar observação</button>` : ""}
+            </div>
+          </div>
+        `;
+
+        lista.appendChild(card);
+      });
+
+      atualizarResumo();
+    }
+
+    function mudarSlide(index, novoSlide) {
+      if (novoSlide < 0 || novoSlide >= CONTEUDOS[index].slides.length) return;
+      estados[index].slide = novoSlide;
+      renderizar();
+    }
+
+    function aprovar(index) {
+      estados[index].status = "approved";
+      estados[index].feedback = "";
+      renderizar();
+      mostrarToast("Conteúdo aprovado!");
+    }
+
+    function mostrarAlteracao(index) {
+      estados[index].status = "changes";
+      renderizar();
+      const campo = document.getElementById(`comment-${index}`);
+      if (campo) campo.focus();
+    }
+
+    function salvarAlteracao(index) {
+      const campo = document.getElementById(`comment-${index}`);
+      estados[index].feedback = campo ? campo.value.trim() : "";
+      estados[index].status = "changes";
+      renderizar();
+      mostrarToast("Observação registrada nesta página.");
+    }
+
+    function atualizarResumo() {
+      const aprovados = estados.filter(item => item.status === "approved").length;
+      const pendentes = CONTEUDOS.length - aprovados;
+      document.getElementById("approvedCount").textContent = aprovados;
+      document.getElementById("pendingCount").textContent = pendentes;
+      document.getElementById("progressLabel").textContent = `${aprovados} de ${CONTEUDOS.length} aprovados`;
+      document.getElementById("progressFill").style.width =
+        `${CONTEUDOS.length ? (aprovados / CONTEUDOS.length) * 100 : 0}%`;
+    }
+
+    let toastTimer;
+    function mostrarToast(mensagem) {
+      const toast = document.getElementById("toast");
+      toast.textContent = mensagem;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    renderizar();
+  </script>
+</body>
+</html>
